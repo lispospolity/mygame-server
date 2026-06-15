@@ -1,0 +1,37 @@
+WebSockets are built with jsons (for now) and follow format of JsonStr = {"t":"0-255","d":"data"} t is type in string that goes from 0-255
+(will change it when i will need more events than 256) and letters correspond to different data, (on each ws message i have written every type of data)
+
+user protocol:
+upon succesful login user gets the token yata yata connects to the websocket on port 9080 and immediatelly sends the token with an auth WS type 0
+
+
+AUTHORIZATION - Type 0:
+a stands for authorization it holds a player login token in string (yes we are learning alphabet all over again) e.g:
+{
+"t":"0",
+"a":"exampletoken1234567890abcdef"
+}
+
+SERVICE - Type 255:
+s stands for session it holds "ok" or "no" in string e.g:
+{
+"t":"255",
+"s":"ok"
+}
+
+new Player - Type 200:
+unm is username and x,y player state, i probably will add direction but for now its the only state.
+server sends it to only the players in Websocket.users
+{
+"t":"200",
+"unm":player name,
+"x":coord x,
+"y":coord y
+}
+
+delete Player - type 201:
+unm like in new player is players name
+{
+"t":"201",
+"unm":player name
+}
