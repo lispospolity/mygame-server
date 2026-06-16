@@ -24,10 +24,9 @@ public class UserLogin {
         DebugLog.Log("User "+Name+" succesfully made. (returned code 200)");
         return new ServerResponse(true, "User succesfully made.", 200);
     }
-    public static ServerResponse DelUser(String Name, String token, String Password) {
-        if (db.GetPassword(Name) == null) return new ServerResponse(false, "Account does not exist.", 200);
-        if (!BCrypt.checkpw(Password, db.GetPassword(Name))) return new ServerResponse(false, "Password incorrect", 200);
-        if (!db.TokenCorrect(Name, token)) return new ServerResponse(false, "Token incorrect", 200);
+    public static ServerResponse DelUser(String token) {
+        if (!db.ValidSession(token)) return new ServerResponse(false, "Token incorrect", 200);
+        String Name = db.GetName(token);
         db.DelUser(Name);
         DebugLog.Log("User "+Name+" succesfully deleted (returned code 200)");
         db.LogOut(token);
@@ -46,6 +45,7 @@ public class UserLogin {
         return new LoginResponse(false, null, "Wrong password.", 200);
     }
     public static ServerResponse LogOut(String token) {
+        if (!db.ValidSession(token)) return new ServerResponse(false, "Could not find player", 200);
         db.LogOut(token);
         DebugLog.Log("User logged out. Session="+token+" (returned code 200)");
         return new ServerResponse(true, "Terminated session", 200);

@@ -8,9 +8,9 @@ public class Http {
         DebugLog.Log("API starting...");
         HttpServer server = HttpServer.create(new InetSocketAddress(9090), 0);
         server.createContext("/api/login", new LoginHandler());
-        server.createContext("/api/logout", new LogoutHandler());
+        server.createContext("/api/session", new LogoutHandler());
         server.createContext("/api/register", new RegisterHandler());
-        server.createContext("/api/delaccount", new DelaccountHandler());
+        server.createContext("/api/user", new DelaccountHandler());
         server.setExecutor(null); // uses default
         try {
             server.start();

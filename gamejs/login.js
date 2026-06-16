@@ -24,7 +24,7 @@ if (data.success == true) {
 }
 }
 window.logout = async function(token) {
-response = await fetch("http://localhost:9090/api/logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: token}) });
+response = await fetch("http://localhost:9090/api/session", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: token}) });
 const data = await response.json();
 console.log(data);
 }
@@ -34,7 +34,7 @@ const data = await response.json();
 console.log(data);
 }
 window.deluser = async function(name, password, token) {
-response = await fetch("http://localhost:9090/api/delaccount", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: name, password: password, token: token}) });
+response = await fetch("http://localhost:9090/api/user", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: name, password: password, token: token}) });
 const data = await response.json();
 console.log(data);
 }
