@@ -3,6 +3,8 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.sql.SQLException;
@@ -14,14 +16,17 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Websocket extends WebSocketServer{
+    private static final Logger log = LoggerFactory.getLogger(Websocket.class);
     private static Websocket instance;
     DB db;
     HashMap<WebSocket, String> users;
+    HashMap<WebSocket, Boolean> pingstate;
     public Websocket(InetSocketAddress address) {
         //helping values
         super(address); //address ws
         instance = this;
-        users = new HashMap<WebSocket, String>();   //logged-in users map
+        users = new HashMap<WebSocket, String>(); //logged-in users map
+        pingstate = new HashMap<WebSocket, Boolean>();
         try {                                       //DB protocol
             db = new DB();
         } catch (SQLException e) {
@@ -32,10 +37,19 @@ public class Websocket extends WebSocketServer{
         //every 5 sec check if player is still on just in case
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
+            users.entrySet().removeIf(entry -> entry.getKey().isClosed());
+            pingstate.entrySet().removeIf(entry -> !users.containsKey(entry.getKey()));//removing closed thingies
+            if (users.isEmpty()) return;
             users.forEach((conn, token) -> {
-                if (token != null && !db.ValidSession(token)) conn.close();
+                if (users.get(conn) == (null)) return;
+                if (!pingstate.containsKey(conn)) return;
+                if (!pingstate.get(conn)) {
+                    new Thread (() -> LogOut(token)).start();
+                } else {
+                    pingstate.replace(conn, false);
+                }
             } );
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 15, TimeUnit.SECONDS);
     }
 
     @Override
@@ -45,16 +59,7 @@ public class Websocket extends WebSocketServer{
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        String token = users.get(conn);
-        String Name = db.GetName(token);
-        Entity.state state = Entity.entmap.get(Name);
-        try {
-            Entity.DelEntity(Name, state);
-        } catch (SQLException e) {
-            String error = e.toString();
-            DebugLog.Log(error);
-            throw new RuntimeException(e);
-        }
+        pingstate.replace(conn, false);
     }
 
     @Override
@@ -62,23 +67,29 @@ public class Websocket extends WebSocketServer{
         Gson gson = new Gson();
         Map msg = gson.fromJson(message, Map.class);
         //beggining of auth message
-        if (users.get(conn) == null) {
+        if (msg.get("t").equals("0")) {
             if (!db.ValidSession(msg.get("a").toString())) {
                 conn.close(1008, "Unauthorized");
                 return;
             }
+            //get all entities
+            HashMap<String, Entity.state> entities = Entity.entmap;
+            //get your name
+            String Name = db.GetName(msg.get("a").toString());
+            if (users.get(conn) == null) {
+                if (!entities.containsKey(Name)) {
+                    try {
+                        new Entity(Name);
+                    } catch (SQLException e) {
+                        DebugLog.Log(e.toString());
+                    }
+                }
+                users.put(conn, msg.get("a").toString());
+            }
             Map<String, String> response = new HashMap<>();
             response.put("s", "ok");
             sendWS(conn, "255", response);
-            String Name = db.GetName(msg.get("a").toString());
-            try {
-                new Entity(Name);
-            } catch (SQLException e) {
-                DebugLog.Log(e.toString());
-            }
-            users.put(conn, msg.get("a").toString());
-            //get all entities
-            HashMap<String, Entity.state> entities = Entity.entmap;
+            pingstate.put(conn, true);
             //iterate on entities and send them all
             for (String entname:entities.keySet()) {
                 String x = entities.get(entname).x()+"";
@@ -92,9 +103,13 @@ public class Websocket extends WebSocketServer{
             return;
         }
         //end of auth message
+        if (!users.containsKey(conn)) return;       //last check if user is authorized
         if (msg.get("t").equals("1")) {
             System.out.println(msg);
-            //TODO walk
+            //TODO keypress
+        }
+        if (msg.get("t").equals("5")) {
+            pingstate.replace(conn, true);
         }
     }
 
@@ -117,6 +132,7 @@ public class Websocket extends WebSocketServer{
         Gson gson = new Gson();
         data.put("t", type);
         for (WebSocket conn : users.keySet()) {
+            if (conn.isClosed()) continue;
             if (users.get(conn)==null) continue;
             conn.send(gson.toJson(data));
         }
@@ -126,19 +142,19 @@ public class Websocket extends WebSocketServer{
     }
     public void LogOut(String token) {
         users.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(token))
+                .filter(entry -> token.equals(entry.getValue()))
                 .findFirst()
                 .ifPresent(entry -> {
                     entry.getKey().close();
                     String name = db.GetName(users.get(entry.getKey()));
+                    users.remove(entry.getKey());
                     try {
                         Entity.DelEntity(name, Entity.entmap.get(name));
                     } catch (SQLException e) {
                         String error = e.toString();
                         DebugLog.Log(error);
-                        throw new RuntimeException(e);
                     }
-                    users.remove(entry.getKey());
+                    db.LogOut(token);
                 });
     }
 }

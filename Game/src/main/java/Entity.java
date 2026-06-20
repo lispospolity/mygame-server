@@ -25,7 +25,6 @@ public class Entity {
         instance.broadcastWS("200", message);
     }
     public static void DelEntity(String Name, state state) throws SQLException {
-        System.out.println(instance);
         playerstates.SaveLoc(Name, state.x()+"", state.y()+"");
         //broadcast deluser>
         HashMap<String, String> message = new HashMap<String, String>();
