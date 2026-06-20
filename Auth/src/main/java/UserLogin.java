@@ -39,7 +39,7 @@ public class UserLogin {
             String token = UUID.randomUUID().toString();
             long time = System.currentTimeMillis();
             db.LogIn(Name, token, time);
-            DebugLog.Log("User "+Name+" logged in. Token="+token+" (returned code 200)");
+            DebugLog.Log("User "+Name+" logged in. (returned code 200)");
             return new LoginResponse(true, token, "Account succesfully logged in.", 200);
         }
         return new LoginResponse(false, null, "Wrong password.", 200);
@@ -47,7 +47,7 @@ public class UserLogin {
     public static ServerResponse LogOut(String token) {
         if (!db.ValidSession(token)) return new ServerResponse(false, "Could not find player", 200);
         db.LogOut(token);
-        DebugLog.Log("User logged out. Session="+token+" (returned code 200)");
+        DebugLog.Log("User logged out. (returned code 200)");
         return new ServerResponse(true, "Terminated session", 200);
     }
 

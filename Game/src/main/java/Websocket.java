@@ -103,7 +103,7 @@ public class Websocket extends WebSocketServer{
             return;
         }
         //end of auth message
-        if (!users.containsKey(conn)) return;       //last check if user is authorized
+        if (users.get(conn) == null) return;       //last check if user is authorized
         if (msg.get("t").equals("1")) {
             System.out.println(msg);
             //TODO keypress
