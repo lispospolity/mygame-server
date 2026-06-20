@@ -8,7 +8,6 @@ import java.util.Map;
 public class RegisterHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         if (Helper.handle(exchange, "POST")) return;
-        System.out.println(exchange.getRequestMethod());
         try {
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             String message = new String(exchange.getRequestBody().readAllBytes());

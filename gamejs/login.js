@@ -21,6 +21,8 @@ if (data.success == true) {
 	localStorage.setItem("token", data.token)
 	console.log(data.token);
 	window.location.href = "/game";
+} else {
+    alert(data.message);
 }
 }
 window.logout = async function(token) {

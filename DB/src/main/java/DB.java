@@ -17,7 +17,7 @@ public class DB {
         INSERT INTO userspw(username, pwd_hash)
         VALUES (?, ?)
       """)) {
-            playerStates.SaveLoc(Name, "10", "10");
+            playerStates.SaveLoc(Name, "1", "1");
             statement.setString(1, Name);
             statement.setString(2, Hash);
             int rowsInserted = statement.executeUpdate();
@@ -121,21 +121,6 @@ public class DB {
                 return resultSet.getString("username");
             }
             return null;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public boolean TokenCorrect(String Name, String token) {
-        try (PreparedStatement statement = conn.prepareStatement("""
-            SELECT username
-            FROM sessions
-            WHERE username = ?
-            AND token = ?
-        """)) {
-            statement.setString(1, Name);
-            statement.setString(2, token);
-            ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

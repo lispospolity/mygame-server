@@ -34,6 +34,7 @@ public class Http {
             try {
                 db = new DB();
             } catch (SQLException e) {
+                DebugLog.Log(e.toString());
                 throw new RuntimeException(e);
             }
             DebugLog.Log("Cleaning sessions...");
@@ -42,5 +43,4 @@ public class Http {
         }));
     }
 }
-//TODO fill all try catch with Debug.Log()
 //TODO finish frontend

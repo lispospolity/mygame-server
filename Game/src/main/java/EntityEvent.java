@@ -1,4 +1,7 @@
-public class EntityEvent {
+import com.google.gson.Gson;
 
-    //TODO priority 2,1
+public class EntityEvent {
+    public void Walk(Gson msg) {
+
+    }
 }

@@ -61,6 +61,7 @@ public class Websocket extends WebSocketServer{
     public void onMessage(WebSocket conn, String message) {
         Gson gson = new Gson();
         Map msg = gson.fromJson(message, Map.class);
+        //beggining of auth message
         if (users.get(conn) == null) {
             if (!db.ValidSession(msg.get("a").toString())) {
                 conn.close(1008, "Unauthorized");
@@ -90,7 +91,9 @@ public class Websocket extends WebSocketServer{
             }
             return;
         }
+        //end of auth message
         if (msg.get("t").equals("1")) {
+            System.out.println(msg);
             //TODO walk
         }
     }

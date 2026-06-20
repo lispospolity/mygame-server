@@ -3,6 +3,8 @@ ws.onopen = () => ws.send(JSON.stringify({ a: localStorage.getItem("token") }));
 console.log("game.js open")
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+const TILE_SIZE = 32;
+
 loadworld();
 async function loadworld() {
 	const response = await fetch("/world.txt");
@@ -16,16 +18,32 @@ async function loadworld() {
         		grid[y][x] = parseInt(worldtxt[y][x]);
     		}
 	}
-	const TILE_SIZE = 32;
-
 	for (let y = 0; y < grid.length; y++) {
-    		for (let x = 0; x < grid[y].length; x++) {
-        		ctx.fillStyle = grid[y][x] === 1 ? "green" : "black";
-        		ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    }
+   		for (let x = 0; x < grid[y].length; x++) {
+       		ctx.fillStyle = grid[y][x] === 1 ? "green" : "black";
+       		ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+   		}
+	}
 }
+
+//handlers for ws events
+function renderplayer(data) {
+	ctx.fillStyle = "red";
+	ctx.fillRect(data.x * TILE_SIZE, data.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 }
+
+
+
+
+
+
+
+
+//ws catchers
 ws.onmessage = (e) => {
     const data = JSON.parse(e.data);
     console.log(data);
+	if (data.t == "200") {
+		renderplayer(data)
+	}
 }

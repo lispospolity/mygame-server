@@ -7,7 +7,6 @@ import java.util.Map;
 public class LogoutHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         if (Helper.handle(exchange, "DELETE")) return;
-        System.out.println(exchange.getRequestMethod());
         try {
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             String message = new String(exchange.getRequestBody().readAllBytes());
