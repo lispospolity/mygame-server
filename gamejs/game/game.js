@@ -6,7 +6,7 @@ const TILE_SIZE = 32;
 init();
 async function init() {
 	await loadworld();
-	const ws = new WebSocket("ws://192.168.1.30:9080");
+	ws = new WebSocket("ws://192.168.1.30:9080");
 	ws.onopen = () => ws.send(JSON.stringify({ a: localStorage.getItem("token"), t:"0" }));
 	//ws catchers beg
 	ws.onmessage = (e) => {
@@ -51,7 +51,10 @@ function renderplayer(data) {
 	ctx.fillStyle = "red";
 	ctx.fillRect(data.x * TILE_SIZE, data.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 }
-
+document.addEventListener("keydown", (e) => {
+	console.log(e);
+	ws.send(JSON.stringify({t:"1", k:e.keyCode}))
+});
 
 //ws senders beg
 

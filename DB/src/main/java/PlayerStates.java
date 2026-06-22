@@ -52,4 +52,3 @@ public class PlayerStates {
 
     record state(int x, int y) {}
 }
-//TODO hide the DB login parameters

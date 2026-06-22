@@ -1,11 +1,14 @@
-import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
+import java.util.Map;
 
 public class EntityEvent {
-    public void keypress(WebSocket conn, Gson msg) {
-
+    public static void handle(WebSocket conn, Map msg) {
+        if (msg.get("t").equals("1")) {
+            keyPress(conn, msg);
+            return;
+        }
     }
-    private void Walk(WebSocket conn, Gson msg) {
-
+    private static void keyPress(WebSocket conn, Map msg) {
+        System.out.println(msg);
     }
 }

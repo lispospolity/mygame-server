@@ -8,8 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,22 +33,46 @@ public class Websocket extends WebSocketServer{
             Debug.Log(error);
             throw new RuntimeException(e);
         }
-        //every 5 sec check if player is still on just in case
+        //ping mechanism
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
-            users.entrySet().removeIf(entry -> entry.getKey().isClosed());
-            pingstate.entrySet().removeIf(entry -> !users.containsKey(entry.getKey()));//removing closed thingies
-            if (users.isEmpty()) return;
+            List<WebSocket> closedConns = users.keySet().stream()
+                    .filter(WebSocket::isClosed)
+                    .toList();
+            Set<String> toLogOut = new HashSet<>();
+            for (WebSocket closed : closedConns) {
+                String token = users.get(closed);
+                if (token == null) {
+                    users.remove(closed);
+                    pingstate.remove(closed);
+                    continue;
+                }
+                boolean hasOpenConn = users.keySet().stream()
+                        .anyMatch(c -> c.isOpen() && token.equals(users.get(c)));
+                if (hasOpenConn) {
+                    users.remove(closed);
+                    pingstate.remove(closed);
+                } else {
+                    toLogOut.add(token);
+                }
+            }
+
             users.forEach((conn, token) -> {
-                if (users.get(conn) == (null)) return;
+                if (token == null) return;
                 if (!pingstate.containsKey(conn)) return;
                 if (!pingstate.get(conn)) {
-                    new Thread (() -> LogOut(token)).start();
+                    toLogOut.add(token);   // put away to log out
                 } else {
                     pingstate.replace(conn, false);
                 }
-            } );
-        }, 0, 15, TimeUnit.SECONDS);
+            });
+
+
+            for (String token : toLogOut) {
+                new Thread(() -> LogOut(token)).start();
+                toLogOut.remove(token);
+            }
+        }, 0, 30, TimeUnit.SECONDS);
     }
 
     @Override
@@ -64,6 +87,7 @@ public class Websocket extends WebSocketServer{
 
     @Override
     public void onMessage(WebSocket conn, String message) {
+        //TODO client->server optimize with bytes arrays
         Gson gson = new Gson();
         Map msg = gson.fromJson(message, Map.class);
         //beggining of auth message
@@ -104,13 +128,10 @@ public class Websocket extends WebSocketServer{
         }
         //end of auth message
         if (users.get(conn) == null) return;       //last check if user is authorized
-        if (msg.get("t").equals("1")) {
-            System.out.println(msg);
-            //TODO keypress
-        }
         if (msg.get("t").equals("5")) {
             pingstate.replace(conn, true);
         }
+        EntityEvent.handle(conn, msg);
     }
 
     @Override
@@ -123,7 +144,7 @@ public class Websocket extends WebSocketServer{
         Debug.Log("INIT: Server WS started.");
     }
     public void sendWS(WebSocket conn, String type, Map<String, String> data) {
-        //TODO for later make it compact with bytes arrays
+        //TODO server->client optimize with bytes arrays
         Gson gson = new Gson();
         data.put("t", type);
         conn.send(gson.toJson(data));
@@ -147,6 +168,7 @@ public class Websocket extends WebSocketServer{
                 .ifPresent(entry -> {
                     entry.getKey().close();
                     String name = db.GetName(users.get(entry.getKey()));
+                    if (!Entity.entmap.containsKey(name)) return;
                     users.remove(entry.getKey());
                     try {
                         Entity.DelEntity(name, Entity.entmap.get(name));

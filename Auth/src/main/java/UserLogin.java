@@ -33,6 +33,7 @@ public class UserLogin {
         return new ServerResponse(true, "User "+Name+" succesfully deleted", 200);
     }
     public static LoginResponse LogIn(String Name, String Password) {
+        //TODO prevent brute forcing
         if (db.GetPassword(Name) == null) return new LoginResponse(false, null, "Account does not exist.", 200);
         if (db.LoggedIn(Name)) return new LoginResponse(false, null, "User already logged in.", 200);
         if (BCrypt.checkpw(Password, db.GetPassword(Name))) {
