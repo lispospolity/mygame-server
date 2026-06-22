@@ -12,4 +12,7 @@ changed world.txt to game.world
 changed userslog.txt to server.log
 last fix: I had to add a way to choose which database you wanna use (i forgot about it in "DB safety")
 
-""
+"final scheduler fix + slight move" finally fixed all of the problems with the scheduler
+ended up adding a hashset toLogOut where i put tokens VERIFIED to be required to log out
+and then logout the tokens in tologout (remember to remove them from the set) and added
+a check to filter tokens that somehow got into logout method and throw them in the trash
