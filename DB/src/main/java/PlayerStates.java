@@ -1,12 +1,12 @@
 import java.sql.*;
 public class PlayerStates {
     Connection conn;
-
+    env.logincredentials login = env.envread();
     public PlayerStates() throws SQLException {
         conn = DriverManager.getConnection(
-                "jdbc:mariadb://localhost:3306/userstates",
-                "root",
-                "ZAQ!2wsx"
+                login.url(),
+                login.user(),
+                login.password()
         );
     }
 

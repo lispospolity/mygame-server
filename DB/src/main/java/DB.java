@@ -2,11 +2,12 @@ import java.sql.*;
 public class DB {
     Connection conn;
     PlayerStates playerStates;
+    env.logincredentials login = env.envread();
     public DB() throws SQLException {
         conn = DriverManager.getConnection(
-                "jdbc:mariadb://localhost:3306/users",
-                "root",
-                "ZAQ!2wsx"
+                login.url(),
+                login.user(),
+                login.password()
         );
         playerStates = new PlayerStates();
     }
@@ -149,4 +150,3 @@ public class DB {
         }
     }
 }
-//TODO hide the DB login parameters

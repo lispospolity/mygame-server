@@ -2,6 +2,8 @@
 userslog.txt
 !.mvn/wrapper/maven-wrapper.jar
 .kotlin
+### MariaDB ###
+/DB/src/main/java/.env
 
 ### IntelliJ IDEA ###
 .idea/
