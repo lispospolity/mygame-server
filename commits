@@ -1,0 +1,15 @@
+I decided i can describe every commit in detail here
+
+"f5 websocket shenanigans fix" f5 messed with my server and client in many funky ways. solution:
+Make a ping mechanism in which the entity stays alive for 30 sec (15 sec for first strike and 15 for deletion)
+then delete the closed conn's (took me way too long to understand I can delete everything that conn.isClosed()
+in the last^ commit I forgot to write, that I have added a pinging websocket as a fix.
+
+"DB SAFETY" I was publically announcing my databases root password, so I changed the password and improved my method
+
+"server logs and naming" i just take out debuglog out of auth, because it'll be awful later on and:
+changed world.txt to game.world
+changed userslog.txt to server.log
+last fix: I had to add a way to choose which database you wanna use (i forgot about it in "DB safety")
+
+""

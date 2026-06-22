@@ -31,7 +31,7 @@ public class Websocket extends WebSocketServer{
             db = new DB();
         } catch (SQLException e) {
             String error = e.toString();
-            DebugLog.Log(error);
+            Debug.Log(error);
             throw new RuntimeException(e);
         }
         //every 5 sec check if player is still on just in case
@@ -81,7 +81,7 @@ public class Websocket extends WebSocketServer{
                     try {
                         new Entity(Name);
                     } catch (SQLException e) {
-                        DebugLog.Log(e.toString());
+                        Debug.Log(e.toString());
                     }
                 }
                 users.put(conn, msg.get("a").toString());
@@ -115,12 +115,12 @@ public class Websocket extends WebSocketServer{
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        DebugLog.Log("WS error from "+conn+" caught: "+ex);
+        Debug.Log("WS error from "+conn+" caught: "+ex);
     }
 
     @Override
     public void onStart() {
-        DebugLog.Log("Server WS started.");
+        Debug.Log("INIT: Server WS started.");
     }
     public void sendWS(WebSocket conn, String type, Map<String, String> data) {
         //TODO for later make it compact with bytes arrays
@@ -152,7 +152,7 @@ public class Websocket extends WebSocketServer{
                         Entity.DelEntity(name, Entity.entmap.get(name));
                     } catch (SQLException e) {
                         String error = e.toString();
-                        DebugLog.Log(error);
+                        Debug.Log(error);
                     }
                     db.LogOut(token);
                 });

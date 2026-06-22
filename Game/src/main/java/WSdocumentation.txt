@@ -50,9 +50,3 @@ unm like in new player is players name
 
 
 
-
-issues I have encountered:
-1. f5 messed with my server and client in many funky ways. solution:
-Make a ping mechanism in which the entity stays alive for 30 sec (15 sec for first strike and 15 for deletion)
-then delete the closed conn's (took me way too long to understand i can delete everything that conn.isClosed()
-thats basically the things im correcting in "f5 websocket shenanigans fix" commit on git

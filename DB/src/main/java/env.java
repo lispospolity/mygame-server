@@ -5,11 +5,12 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class env {
-    public static logincredentials envread() {
+    public static logincredentials envread(int type) {
         Path filePath = Paths.get("DB/src/main/java/.env");
         try {
             List<String> lines = Files.readAllLines(filePath);
-            return new logincredentials(lines.get(0), lines.get(1), lines.get(2));
+            if (type == 0) return new logincredentials(lines.get(0), lines.get(1), lines.get(2));
+            return new logincredentials(lines.get(4), lines.get(1), lines.get(2));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

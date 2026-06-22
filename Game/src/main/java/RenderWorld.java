@@ -6,9 +6,9 @@ import java.util.List;
 
 public class RenderWorld {
     private static int[][] ReadWorld() {
-        DebugLog.Log("Reading world.txt");
+        Debug.Log("INIT: Reading game.world");
         int[][] grid = new int[100][100];
-        Path filePath = Paths.get("world.txt");
+        Path filePath = Paths.get("game.world");
         try {
             List<String> lines = Files.readAllLines(filePath);
             for (int y = 0; y<lines.size(); y++) {
@@ -19,14 +19,14 @@ public class RenderWorld {
             }
         } catch (IOException e) {
             String error = e.toString();
-            DebugLog.Log(error);
+            Debug.Log(error);
             e.printStackTrace();
         }
         return grid;
     }
     public static void LoadWorld() {
         int [][] grid = ReadWorld();
-        DebugLog.Log("World loaded succesfully.");
+        Debug.Log("INIT: World loaded succesfully.");
         //create entities
     }
 //TODO finish that

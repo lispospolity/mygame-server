@@ -12,7 +12,7 @@ public class UserLogin {
             db = new DB();
         } catch (SQLException e) {
             String error = e.toString();
-            DebugLog.Log(error);
+            Debug.Log(error);
             throw new RuntimeException(e);
         }
     }
@@ -21,14 +21,14 @@ public class UserLogin {
         if (db.GetPassword(Name) != null) return new ServerResponse(false, "User already exists.", 200);
         String Hash = BCrypt.hashpw(Password, BCrypt.gensalt());
         db.AddUser(Name, Hash);
-        DebugLog.Log("User "+Name+" succesfully made. (returned code 200)");
+        Debug.Log("User "+Name+" succesfully made. (returned code 200)");
         return new ServerResponse(true, "User succesfully made.", 200);
     }
     public static ServerResponse DelUser(String token) {
         if (!db.ValidSession(token)) return new ServerResponse(false, "Token incorrect", 200);
         String Name = db.GetName(token);
         db.DelUser(Name);
-        DebugLog.Log("User "+Name+" succesfully deleted (returned code 200)");
+        Debug.Log("User "+Name+" succesfully deleted (returned code 200)");
         db.LogOut(token);
         return new ServerResponse(true, "User "+Name+" succesfully deleted", 200);
     }
@@ -39,7 +39,7 @@ public class UserLogin {
             String token = UUID.randomUUID().toString();
             long time = System.currentTimeMillis();
             db.LogIn(Name, token, time);
-            DebugLog.Log("User "+Name+" logged in. (returned code 200)");
+            Debug.Log("User "+Name+" logged in. (returned code 200)");
             return new LoginResponse(true, token, "Account succesfully logged in.", 200);
         }
         return new LoginResponse(false, null, "Wrong password.", 200);
@@ -47,7 +47,7 @@ public class UserLogin {
     public static ServerResponse LogOut(String token) {
         if (!db.ValidSession(token)) return new ServerResponse(false, "Could not find player", 200);
         db.LogOut(token);
-        DebugLog.Log("User logged out. (returned code 200)");
+        Debug.Log("User logged out. (returned code 200)");
         return new ServerResponse(true, "Terminated session", 200);
     }
 

@@ -2,7 +2,7 @@ import java.sql.*;
 public class DB {
     Connection conn;
     PlayerStates playerStates;
-    env.logincredentials login = env.envread();
+    env.logincredentials login = env.envread(0);
     public DB() throws SQLException {
         conn = DriverManager.getConnection(
                 login.url(),

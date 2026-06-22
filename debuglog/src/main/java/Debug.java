@@ -6,12 +6,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 //exceptions
 import java.io.IOException;
-public class DebugLog {
+public class Debug {
     private static final PrintWriter logger;
 
     static {
         try {
-            logger = new PrintWriter(new FileWriter("userslog.txt", true));
+            logger = new PrintWriter(new FileWriter("server.log", true));
         } catch (IOException e) {
             throw new RuntimeException("Couldn't open logs", e);
         }
