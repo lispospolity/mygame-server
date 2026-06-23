@@ -20,17 +20,19 @@ public class Websocket extends WebSocketServer{
     DB db;
     HashMap<WebSocket, String> users;
     HashMap<WebSocket, Boolean> pingstate;
+    HashMap<WebSocket, String> connToName;
     public Websocket(InetSocketAddress address) {
         //helping values
         super(address); //address ws
         instance = this;
         users = new HashMap<WebSocket, String>(); //logged-in users map
+        connToName = new HashMap<WebSocket, String>(); //helpful map for getting entity states
         pingstate = new HashMap<WebSocket, Boolean>();
         try {                                       //DB protocol
             db = new DB();
         } catch (SQLException e) {
             String error = e.toString();
-            Debug.Log(error);
+            Debug.log(error);
             throw new RuntimeException(e);
         }
         //ping mechanism
@@ -40,6 +42,9 @@ public class Websocket extends WebSocketServer{
                     .filter(WebSocket::isClosed)
                     .toList();
             Set<String> toLogOut = new HashSet<>();
+            //System.out.println("scheduler opened with pingstate: "+pingstate);
+            //System.out.println("to logout: "+toLogOut);
+            //System.out.println("users: "+users);
             for (WebSocket closed : closedConns) {
                 String token = users.get(closed);
                 if (token == null) {
@@ -70,7 +75,6 @@ public class Websocket extends WebSocketServer{
 
             for (String token : toLogOut) {
                 new Thread(() -> LogOut(token)).start();
-                toLogOut.remove(token);
             }
         }, 0, 30, TimeUnit.SECONDS);
     }
@@ -92,37 +96,38 @@ public class Websocket extends WebSocketServer{
         Map msg = gson.fromJson(message, Map.class);
         //beggining of auth message
         if (msg.get("t").equals("0")) {
-            if (!db.ValidSession(msg.get("a").toString())) {
+            if (!db.validSession(msg.get("a").toString())) {
                 conn.close(1008, "Unauthorized");
                 return;
             }
             //get all entities
             HashMap<String, Entity.state> entities = Entity.entmap;
             //get your name
-            String Name = db.GetName(msg.get("a").toString());
+            String name = db.getName(msg.get("a").toString());
             if (users.get(conn) == null) {
-                if (!entities.containsKey(Name)) {
+                if (!entities.containsKey(name)) {
                     try {
-                        new Entity(Name);
+                        new Entity(name);
                     } catch (SQLException e) {
-                        Debug.Log(e.toString());
+                        Debug.log(e.toString());
                     }
                 }
                 users.put(conn, msg.get("a").toString());
+                connToName.put(conn, name);
             }
             Map<String, String> response = new HashMap<>();
             response.put("s", "ok");
             sendWS(conn, "255", response);
             pingstate.put(conn, true);
             //iterate on entities and send them all
-            for (String entname:entities.keySet()) {
-                String x = entities.get(entname).x()+"";
-                String y = entities.get(entname).y()+"";
-                Map<String, String> newent = new HashMap<>();
-                newent.put("unm", entname);
-                newent.put("x", x);
-                newent.put("y", y);
-                sendWS(conn, "200", newent);
+            for (String entName:entities.keySet()) {
+                String x = entities.get(entName).x()+"";
+                String y = entities.get(entName).y()+"";
+                Map<String, String> newEnt = new HashMap<>();
+                newEnt.put("unm", entName);
+                newEnt.put("x", x);
+                newEnt.put("y", y);
+                sendWS(conn, "200", newEnt);
             }
             return;
         }
@@ -136,12 +141,12 @@ public class Websocket extends WebSocketServer{
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        Debug.Log("WS error from "+conn+" caught: "+ex);
+        Debug.log("WS error from "+conn+" caught: "+ex);
     }
 
     @Override
     public void onStart() {
-        Debug.Log("INIT: Server WS started.");
+        Debug.log("INIT: Server WS started.");
     }
     public void sendWS(WebSocket conn, String type, Map<String, String> data) {
         //TODO server->client optimize with bytes arrays
@@ -162,21 +167,23 @@ public class Websocket extends WebSocketServer{
         return instance;
     }
     public void LogOut(String token) {
+        //System.out.println("logout started with data: "+token);
         users.entrySet().stream()
                 .filter(entry -> token.equals(entry.getValue()))
                 .findFirst()
                 .ifPresent(entry -> {
+                    String name = db.getName(token);
                     entry.getKey().close();
-                    String name = db.GetName(users.get(entry.getKey()));
-                    if (!Entity.entmap.containsKey(name)) return;
                     users.remove(entry.getKey());
+                    connToName.remove(entry.getKey());
+                    db.logOut(token);                       // sesja znika ZAWSZE
+                    Entity.state s = Entity.entmap.get(name);
+                    if (s == null) return;                  // guard tylko dla delEntity
                     try {
-                        Entity.DelEntity(name, Entity.entmap.get(name));
+                        Entity.delEntity(name, s);
                     } catch (SQLException e) {
-                        String error = e.toString();
-                        Debug.Log(error);
+                        Debug.log(e.toString());
                     }
-                    db.LogOut(token);
                 });
     }
 }

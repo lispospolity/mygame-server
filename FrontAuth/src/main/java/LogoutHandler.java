@@ -13,7 +13,7 @@ public class LogoutHandler implements HttpHandler {
             Gson gson = new Gson();
             Map msg = gson.fromJson(message, Map.class);
             String token = msg.get("token").toString();
-            String response = gson.toJson(UserLogin.LogOut(token));
+            String response = gson.toJson(UserLogin.logOut(token));
             Websocket.getInstance().LogOut(token);
             byte[] byteresponse = response.getBytes();
             exchange.sendResponseHeaders(200, byteresponse.length);

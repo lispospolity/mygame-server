@@ -16,3 +16,12 @@ last fix: I had to add a way to choose which database you wanna use (i forgot ab
 ended up adding a hashset toLogOut where i put tokens VERIFIED to be required to log out
 and then logout the tokens in tologout (remember to remove them from the set) and added
 a check to filter tokens that somehow got into logout method and throw them in the trash
+
+from now on i might be changing method and parameter names to match the usual java ones
+but i wont include them in my future commits
+
+"sched + walk + front" added a feature today - walking - crazy ikr? made it work in front,
+added a playerdelete in front, realised my scheduler is down bad again, i just didnt realise
+that tologout is defined every iterations so tologout.remove(token) was just dumb.
+also cleaned up Websocket.logOut but the scheduler issues and the logout thingy was
+fully done by claude sadly, i gave up after so many failed attempts with this scheduler.

@@ -24,7 +24,7 @@ public class Helper {
     public static void Error(HttpExchange exchange, Exception e) throws IOException {
         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         String error = "Server API error";
-        Debug.Log(e.toString());
+        Debug.log(e.toString());
         byte[] byting = error.getBytes();
         exchange.sendResponseHeaders(500, byting.length);
         exchange.getResponseBody().write(byting);

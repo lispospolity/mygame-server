@@ -16,7 +16,7 @@ public class Debug {
             throw new RuntimeException("Couldn't open logs", e);
         }
     }
-    public static void Log(String message) {
+    public static void log(String message) {
         String timestamp = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
         logger.println("["+timestamp+"] "+ message);

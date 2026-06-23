@@ -13,9 +13,9 @@ public class RegisterHandler implements HttpHandler {
             String message = new String(exchange.getRequestBody().readAllBytes());
             Gson gson = new Gson();
             Map msg = gson.fromJson(message, Map.class);
-            String Name = msg.get("username").toString();
-            String Password = msg.get("password").toString();
-            String response = gson.toJson(UserLogin.MkUser(Name, Password));
+            String name = msg.get("username").toString();
+            String password = msg.get("password").toString();
+            String response = gson.toJson(UserLogin.mkUser(name, password));
             byte[] byteresponse = response.getBytes();
             exchange.sendResponseHeaders(200, byteresponse.length);
             exchange.getResponseBody().write(byteresponse);

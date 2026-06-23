@@ -13,25 +13,25 @@ public class Entity {
         }
     }
 
-    public Entity(String Name) throws SQLException {
+    public Entity(String name) throws SQLException {
         HashMap<String, String> message = new HashMap<String, String>();
         //message declaration ^
-        PlayerStates.state coords = playerstates.GetCoords(Name);
-        message.put("unm", Name);
+        PlayerStates.state coords = playerstates.getCoords(name);
+        message.put("unm", name);
         message.put("x", ""+coords.x());
         message.put("y", ""+coords.y());
         //message building ^
-        entmap.put(Name, new state(coords.x(),coords.y()));
+        entmap.put(name, new state(coords.x(),coords.y()));
         instance.broadcastWS("200", message);
     }
-    public static void DelEntity(String Name, state state) throws SQLException {
-        playerstates.SaveLoc(Name, state.x()+"", state.y()+"");
+    public static void delEntity(String name, state state) throws SQLException {
+        playerstates.saveLoc(name, state.x()+"", state.y()+"");
         //broadcast deluser>
         HashMap<String, String> message = new HashMap<String, String>();
-        message.put("unm", Name);
+        message.put("unm", name);
         instance.broadcastWS("201", message);
         //remove from here>
-        entmap.remove(Name);
+        entmap.remove(name);
     }
     public record state(int x, int y) {}
 }

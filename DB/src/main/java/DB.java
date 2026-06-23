@@ -2,7 +2,7 @@ import java.sql.*;
 public class DB {
     Connection conn;
     PlayerStates playerStates;
-    env.logincredentials login = env.envread(0);
+    Env.LoginCredentials login = Env.envRead(0);
     public DB() throws SQLException {
         conn = DriverManager.getConnection(
                 login.url(),
@@ -12,26 +12,26 @@ public class DB {
         playerStates = new PlayerStates();
     }
 
-    public void AddUser(String Name, String Hash) throws SQLException {
-        if (IsRegistered(Name)) return;
+    public void addUser(String name, String hash) throws SQLException {
+        if (isRegistered(name)) return;
         try (PreparedStatement statement = conn.prepareStatement("""
         INSERT INTO userspw(username, pwd_hash)
         VALUES (?, ?)
       """)) {
-            playerStates.SaveLoc(Name, "1", "1");
-            statement.setString(1, Name);
-            statement.setString(2, Hash);
+            playerStates.saveLoc(name, "1", "1");
+            statement.setString(1, name);
+            statement.setString(2, hash);
             int rowsInserted = statement.executeUpdate();
         }
     }
 
-    public String GetPassword(String Name) {
+    public String getPassword(String name) {
         try (PreparedStatement statement = conn.prepareStatement("""
             SELECT pwd_hash
             FROM userspw
             WHERE username = ?
         """)) {
-            statement.setString(1, Name);
+            statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getString("pwd_hash");
@@ -42,27 +42,27 @@ public class DB {
         }
     }
 
-    public void DelUser(String Name) {
+    public void delUser(String name) {
         try (PreparedStatement statement = conn.prepareStatement("""
             DELETE 
             FROM userspw
             WHERE username = ?
         """)) {
-            statement.setString(1, Name);
+            statement.setString(1, name);
             int result = statement.executeUpdate();
-            if (result>0) playerStates.DelState(Name);
+            if (result>0) playerStates.delState(name);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Boolean IsRegistered(String Name) {
+    private Boolean isRegistered(String name) {
         try (PreparedStatement statement = conn.prepareStatement("""
             SELECT username
             FROM userspw
             WHERE username = ?
         """)) {
-            statement.setString(1, Name);
+            statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
             return resultSet.next();
         } catch (SQLException e) {
@@ -70,12 +70,12 @@ public class DB {
         }
     }
 
-    public void LogIn(String Name, String token, long time) {
+    public void logIn(String name, String token, long time) {
         try (PreparedStatement statement = conn.prepareStatement("""
         INSERT INTO sessions(username, token, time)
         VALUES (?, ?, ?)
       """)) {
-            statement.setString(1, Name);
+            statement.setString(1, name);
             statement.setString(2, token);
             statement.setLong(3, time);
             int rowsInserted = statement.executeUpdate();
@@ -84,7 +84,7 @@ public class DB {
         }
     }
 
-    public void LogOut(String token) {
+    public void logOut(String token) {
         try (PreparedStatement statement = conn.prepareStatement("""
             DELETE 
             FROM sessions
@@ -97,20 +97,20 @@ public class DB {
         }
     }
 
-    public Boolean LoggedIn(String Name) {
+    public Boolean loggedIn(String name) {
         try (PreparedStatement statement = conn.prepareStatement("""
             SELECT username
             FROM sessions
             WHERE username = ?
         """)) {
-            statement.setString(1, Name);
+            statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
             return resultSet.next();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public String GetName(String token) {
+    public String getName(String token) {
         try (PreparedStatement statement = conn.prepareStatement("""
             SELECT username
             FROM sessions
@@ -126,7 +126,7 @@ public class DB {
             throw new RuntimeException(e);
         }
     }
-    public boolean ValidSession(String token) {
+    public boolean validSession(String token) {
         try (PreparedStatement statement = conn.prepareStatement("""
             SELECT username
             FROM sessions
@@ -139,7 +139,7 @@ public class DB {
             throw new RuntimeException(e);
         }
     }
-    public void CleanSessions() {
+    public void cleanSessions() {
         try (PreparedStatement statement = conn.prepareStatement("""
             DELETE 
             FROM sessions

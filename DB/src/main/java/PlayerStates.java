@@ -1,7 +1,7 @@
 import java.sql.*;
 public class PlayerStates {
     Connection conn;
-    env.logincredentials login = env.envread(1);
+    Env.LoginCredentials login = Env.envRead(1);
     public PlayerStates() throws SQLException {
         conn = DriverManager.getConnection(
                 login.url(),
@@ -10,36 +10,36 @@ public class PlayerStates {
         );
     }
 
-    public void SaveLoc(String Name, String x, String y) throws SQLException {
+    public void saveLoc(String name, String x, String y) throws SQLException {
         try (PreparedStatement statement = conn.prepareStatement("""
         INSERT INTO userloc(username, x, y)
         VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE x = VALUES(x), y = VALUES(y)
       """)) {
-            statement.setString(1, Name);
+            statement.setString(1, name);
             statement.setString(2, x);
             statement.setString(3, y);
             int rowsInserted = statement.executeUpdate();
         }
     }
-    public void DelState(String Name) {
+    public void delState(String name) {
         try (PreparedStatement statement = conn.prepareStatement("""
             DELETE 
             FROM userloc
             WHERE username = ?
         """)) {
-            statement.setString(1, Name);
+            statement.setString(1, name);
             int result = statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public state GetCoords(String Name) {
+    public state getCoords(String name) {
         try (PreparedStatement statement1 = conn.prepareStatement("""
             SELECT x, y
             FROM userloc
             WHERE username = ?
         """)) {
-            statement1.setString(1, Name);
+            statement1.setString(1, name);
             ResultSet resultSet = statement1.executeQuery();
             if (resultSet.next()) {
                 return new state(resultSet.getInt("x"), resultSet.getInt("y"));

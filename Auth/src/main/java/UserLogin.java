@@ -12,43 +12,44 @@ public class UserLogin {
             db = new DB();
         } catch (SQLException e) {
             String error = e.toString();
-            Debug.Log(error);
+            Debug.log(error);
             throw new RuntimeException(e);
         }
     }
 
-    public static ServerResponse MkUser(String Name, String Password) throws SQLException {
-        if (db.GetPassword(Name) != null) return new ServerResponse(false, "User already exists.", 200);
+    public static ServerResponse mkUser(String name, String Password) throws SQLException {
+        if (db.getPassword(name) != null) return new ServerResponse(false, "User already exists.", 200);
         String Hash = BCrypt.hashpw(Password, BCrypt.gensalt());
-        db.AddUser(Name, Hash);
-        Debug.Log("User "+Name+" succesfully made. (returned code 200)");
+        db.addUser(name, Hash);
+        Debug.log("User "+name+" succesfully made. (returned code 200)");
         return new ServerResponse(true, "User succesfully made.", 200);
     }
-    public static ServerResponse DelUser(String token) {
-        if (!db.ValidSession(token)) return new ServerResponse(false, "Token incorrect", 200);
-        String Name = db.GetName(token);
-        db.DelUser(Name);
-        Debug.Log("User "+Name+" succesfully deleted (returned code 200)");
-        db.LogOut(token);
-        return new ServerResponse(true, "User "+Name+" succesfully deleted", 200);
+    public static ServerResponse delUser(String token) {
+        if (!db.validSession(token)) return new ServerResponse(false, "Token incorrect", 200);
+        String name = db.getName(token);
+        db.delUser(name);
+        Debug.log("User "+name+" succesfully deleted (returned code 200)");
+        db.logOut(token);
+        return new ServerResponse(true, "User "+name+" succesfully deleted", 200);
     }
-    public static LoginResponse LogIn(String Name, String Password) {
+    public static LoginResponse logIn(String name, String password) {
         //TODO prevent brute forcing
-        if (db.GetPassword(Name) == null) return new LoginResponse(false, null, "Account does not exist.", 200);
-        if (db.LoggedIn(Name)) return new LoginResponse(false, null, "User already logged in.", 200);
-        if (BCrypt.checkpw(Password, db.GetPassword(Name))) {
+        String dbHash = db.getPassword(name);
+        if (dbHash == null) return new LoginResponse(false, null, "Account does not exist.", 200);
+        if (db.loggedIn(name)) return new LoginResponse(false, null, "User already logged in.", 200);
+        if (BCrypt.checkpw(password, dbHash)) {
             String token = UUID.randomUUID().toString();
             long time = System.currentTimeMillis();
-            db.LogIn(Name, token, time);
-            Debug.Log("User "+Name+" logged in. (returned code 200)");
+            db.logIn(name, token, time);
+            Debug.log("User "+name+" logged in. (returned code 200)");
             return new LoginResponse(true, token, "Account succesfully logged in.", 200);
         }
         return new LoginResponse(false, null, "Wrong password.", 200);
     }
-    public static ServerResponse LogOut(String token) {
-        if (!db.ValidSession(token)) return new ServerResponse(false, "Could not find player", 200);
-        db.LogOut(token);
-        Debug.Log("User logged out. (returned code 200)");
+    public static ServerResponse logOut(String token) {
+        if (!db.validSession(token)) return new ServerResponse(false, "Could not find player", 200);
+        db.logOut(token);
+        Debug.log("User logged out. (returned code 200)");
         return new ServerResponse(true, "Terminated session", 200);
     }
 

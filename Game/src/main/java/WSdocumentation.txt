@@ -12,6 +12,15 @@ a stands for authorization it holds a player login token in string (yes we are l
 "a":"exampletoken1234567890abcdef"
 }
 
+KeyPress - type 1: (player->server)
+aUp = 1, aDown = 2, aLeft = 3, aRight = 4, w = 5, s = 6, a = 7, d = 8
+on java int gets parsed into double (because JSON is dum) so you need to do the infamous:
+int key = ((Double) msg.get("k")).intValue();
+{
+"t":"1"
+"k":int
+}
+
 PING - type 5: (player->server) 
 every 3 sec gets sent to server to prove user is still on and avoid accidental logouts
 {
@@ -22,7 +31,7 @@ SERVICE - Type 255: (server->player)
 s stands for session it holds "ok" or "no" in string e.g:
 {
 "t":"255",
-"s":"ok"
+"s":String "ok"
 }
 
 new Player - Type 200: (server->player)
@@ -30,19 +39,27 @@ unm is username and x,y player state, i probably will add direction but for now 
 server sends it to only the players in Websocket.users
 {
 "t":"200",
-"unm":player name,
-"x":coord x,
-"y":coord y
+"unm":String name,
+"x":String coordx,
+"y":String coordy
 }
 
 delete Player - type 201: (server->player)
-unm like in new player is players name
+unm like in new player is players name (not added on front yet)
 {
 "t":"201",
-"unm":player name
+"unm":String name
 }
 
-
+move player - type 202: (server->player)
+no delta lets not make our users desync.
+unm is name, x and y are coords served in string
+{
+"t":"202",
+"unm":String name,
+"x":String coordx,
+"y":String coordy
+}
 
 
 

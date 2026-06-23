@@ -4,10 +4,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class RenderWorld {
-    private static int[][] ReadWorld() {
-        Debug.Log("INIT: Reading game.world");
-        int[][] grid = new int[100][100];
+public class World {
+    public static int[][] grid;
+    private static int[][] readWorld() {
+        Debug.log("INIT: Reading game.world");
+        int[][] grid = new int[10][10];
         Path filePath = Paths.get("game.world");
         try {
             List<String> lines = Files.readAllLines(filePath);
@@ -19,15 +20,14 @@ public class RenderWorld {
             }
         } catch (IOException e) {
             String error = e.toString();
-            Debug.Log(error);
+            Debug.log(error);
             e.printStackTrace();
         }
         return grid;
     }
     public static void LoadWorld() {
-        int [][] grid = ReadWorld();
-        Debug.Log("INIT: World loaded succesfully.");
-        //create entities
+        grid = readWorld();
+        Debug.log("INIT: World loaded succesfully.");
+        //create entities (when I add NPCs)
     }
-//TODO finish that
 }
