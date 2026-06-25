@@ -25,3 +25,7 @@ added a playerdelete in front, realised my scheduler is down bad again, i just d
 that tologout is defined every iterations so tologout.remove(token) was just dumb.
 also cleaned up Websocket.logOut but the scheduler issues and the logout thingy was
 fully done by claude sadly, i gave up after so many failed attempts with this scheduler.
+
+"anti brute force" almost lost this commit because i didnt save it but here it goes
+i feel like this name is self-explanatory but i can say that it blocks give account
+5 mins after 5 wrong attempts

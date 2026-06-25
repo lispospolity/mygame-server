@@ -35,3 +35,5 @@ public class Entity {
     }
     public record state(int x, int y) {}
 }
+//TODO add health to state and class health regen with a scheduler
+//TODO change name to Player and make an Enemy or Entity class (Entity better)

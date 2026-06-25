@@ -2,6 +2,7 @@
 import org.mindrot.jbcrypt.BCrypt;
 //uuid
 import java.net.http.WebSocket;
+import java.util.HashMap;
 import java.util.UUID;
 import java.sql.SQLException;
 
@@ -33,7 +34,9 @@ public class UserLogin {
         return new ServerResponse(true, "User "+name+" succesfully deleted", 200);
     }
     public static LoginResponse logIn(String name, String password) {
-        //TODO prevent brute forcing
+        LoginResponse lockResponse = LockOutAcc.handle(name);
+        if (lockResponse != null) return lockResponse; //anti brute force()
+
         String dbHash = db.getPassword(name);
         if (dbHash == null) return new LoginResponse(false, null, "Account does not exist.", 200);
         if (db.loggedIn(name)) return new LoginResponse(false, null, "User already logged in.", 200);
@@ -44,6 +47,7 @@ public class UserLogin {
             Debug.log("User "+name+" logged in. (returned code 200)");
             return new LoginResponse(true, token, "Account succesfully logged in.", 200);
         }
+        LockOutAcc.nextWrong(name); //anti-brute force attempt counter
         return new LoginResponse(false, null, "Wrong password.", 200);
     }
     public static ServerResponse logOut(String token) {
@@ -66,3 +70,4 @@ public class UserLogin {
             int code
     ) {}
 }
+//TODO add email register and email log in compability
