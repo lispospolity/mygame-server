@@ -18,7 +18,7 @@ public class UserLogin {
         }
     }
 
-    public static ServerResponse mkUser(String name, String Password) throws SQLException {
+    public static ServerResponse mkUser(String name, String Password) {
         if (db.getPassword(name) != null) return new ServerResponse(false, "User already exists.", 200);
         String Hash = BCrypt.hashpw(Password, BCrypt.gensalt());
         db.addUser(name, Hash);

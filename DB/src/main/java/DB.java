@@ -12,7 +12,7 @@ public class DB {
         playerStates = new PlayerStates();
     }
 
-    public void addUser(String name, String hash) throws SQLException {
+    public void addUser(String name, String hash) {
         if (isRegistered(name)) return;
         try (PreparedStatement statement = conn.prepareStatement("""
         INSERT INTO userspw(username, pwd_hash)
@@ -22,6 +22,8 @@ public class DB {
             statement.setString(1, name);
             statement.setString(2, hash);
             int rowsInserted = statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 

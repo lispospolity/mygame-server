@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.example</groupId>
-        <artifactId>userlogin</artifactId>
+        <artifactId>simpleGame</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>Front</artifactId>
+    <artifactId>REST_API</artifactId>
 
     <properties>
         <maven.compiler.source>26</maven.compiler.source>

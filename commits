@@ -29,3 +29,6 @@ fully done by claude sadly, i gave up after so many failed attempts with this sc
 "anti brute force" almost lost this commit because i didnt save it but here it goes
 i feel like this name is self-explanatory but i can say that it blocks give account
 5 mins after 5 wrong attempts
+
+"API changes" added some quality changes in the REST API for me, moved alot of the work
+to the Helper class
