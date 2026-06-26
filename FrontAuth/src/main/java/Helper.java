@@ -9,17 +9,12 @@ public class Helper {
 
     static Gson gson = new Gson();
 
-    public static boolean handle(HttpExchange exchange, String WantedMethod) throws IOException {
+    public static boolean handle(HttpExchange exchange) throws IOException {
         if (exchange.getRequestMethod().equals("OPTIONS")) {
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
             exchange.sendResponseHeaders(204, -1);
             exchange.close();
-            return true;
-        }
-
-        if (!exchange.getRequestMethod().equals(WantedMethod)) {
-            error(exchange, 405, "Forbidden Method");
             return true;
         }
         return false;
@@ -32,7 +27,7 @@ public class Helper {
 
     public static void respond(HttpExchange exchange, String toClient) {
         try {
-            System.out.println("responding with: "+toClient);
+            //System.out.println("responding with: "+toClient);
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             byte[] byteresponse = toClient.getBytes();
             exchange.sendResponseHeaders(200, byteresponse.length);

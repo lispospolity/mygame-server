@@ -2,7 +2,7 @@ I decided i can describe every commit in detail here
 
 "f5 websocket shenanigans fix" f5 messed with my server and client in many funky ways. solution:
 Make a ping mechanism in which the entity stays alive for 30 sec (15 sec for first strike and 15 for deletion)
-then delete the closed conn's (took me way too long to understand I can delete everything that conn.isClosed()
+then delete the closed conn's (took me way too long to understand I can delete everything that conn.isClosed() )
 in the last^ commit I forgot to write, that I have added a pinging websocket as a fix.
 
 "DB SAFETY" I was publically announcing my databases root password, so I changed the password and improved my method
@@ -32,3 +32,17 @@ i feel like this name is self-explanatory but i can say that it blocks give acco
 
 "API changes" added some quality changes in the REST API for me, moved alot of the work
 to the Helper class
+
+"API rate limiting":
+0. HUGE change with api, deleted these stupid names and left only /api/user and /api/session
+navigated with methods like a normal based REST API B)
+1. changed password attempts to 7 instead of 5 to match the rate limiting better
+2. added a class RateLimiting with methods which return true if given ip has done
+too many requests, null when theres a server error and false when the api can continue.
+3. made login.js now handle server sent errors without choking on them
+4. commented some prints
+5. ate some cherries
+cooldowns:
+/api/user:6 messages per hour
+/api/session: is split to login (5 per minute) and logout (10 per minute)
+

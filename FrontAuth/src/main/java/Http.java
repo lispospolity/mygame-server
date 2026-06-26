@@ -7,10 +7,8 @@ public class Http {
     public static void main(String[] args) throws IOException {
         Debug.log("INIT: API starting...");
         HttpServer server = HttpServer.create(new InetSocketAddress(9090), 0);
-        server.createContext("/api/login", new LoginHandler());
-        server.createContext("/api/session", new LogoutHandler());
-        server.createContext("/api/register", new RegisterHandler());
-        server.createContext("/api/user", new DelaccountHandler());
+        server.createContext("/api/session", new SessionHandler());
+        server.createContext("/api/user", new UserHandler());
         server.setExecutor(null); // uses default
         try {
             server.start();
@@ -43,4 +41,5 @@ public class Http {
         }));
     }
 }
-//TODO rate limiting for later
+//TODO server bail if it has too many messages: 503 with no message
+//also frontend compatibility with this error^

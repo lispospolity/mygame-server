@@ -5,13 +5,13 @@ public class LockOutAcc {
     static HashMap<String, Integer> attempts = new HashMap<String, Integer>();
     public static UserLogin.LoginResponse handle(String name) {
         if (!attempts.containsKey(name)) attempts.put(name, 0);
-        if (attempts.get(name)>4) {
+        if (attempts.get(name)>6) {
             Debug.log("Failed login from account "+name+". Blocked for 5 mins");
             blockAcc.put(name, System.currentTimeMillis()+300000);
             attempts.replace(name, 0);
         }
         if (blockAcc.containsKey(name)) {
-            if (blockAcc.get(name) > System.currentTimeMillis()) return new UserLogin.LoginResponse(false, null, "Too many attempts.", 200);
+            if (blockAcc.get(name) > System.currentTimeMillis()) return new UserLogin.LoginResponse(false, null, "Too many login attempts. Retry in ~5mins", 200);
         }
         return null;
     }
