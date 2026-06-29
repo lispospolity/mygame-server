@@ -1,8 +1,6 @@
 //hashing
 import org.mindrot.jbcrypt.BCrypt;
 //uuid
-import java.net.http.WebSocket;
-import java.util.HashMap;
 import java.util.UUID;
 import java.sql.SQLException;
 
@@ -18,11 +16,12 @@ public class UserLogin {
         }
     }
 
-    public static ServerResponse mkUser(String name, String Password) {
+    public static ServerResponse mkUser(String name, String password) {
         if (db.getPassword(name) != null) return new ServerResponse(false, "User already exists.", 200);
-        String Hash = BCrypt.hashpw(Password, BCrypt.gensalt());
-        db.addUser(name, Hash);
-        Debug.log("User "+name+" succesfully made. (returned code 200)");
+        if (CredentialsRules.credsLegal(name, password)) return new ServerResponse(false, "Name or password does not meet our policy.", 200);
+        String hash = BCrypt.hashpw(password, BCrypt.gensalt());
+        db.addUser(name, hash);
+        Debug.log("User "+name+" succesfully registered. (returned code 200)");
         return new ServerResponse(true, "User succesfully made.", 200);
     }
     public static ServerResponse delUser(String token) {
