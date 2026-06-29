@@ -17,17 +17,15 @@ registerbtn.addEventListener('click', (e) => {
 
 
 async function login(name, password) {
-    console.log(name+password);
     const response = await fetch("http://192.168.1.30:9090/api/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: name, password: password}) });
     const data = await response.json();
-    console.log(data)
+    //console.log(data)
     if (data.error) {
         alert(data.error);
         return;
     }
     if (data.success == true) {
         localStorage.setItem("token", data.token)
-    	console.log(data.token);
 	    window.location.href = "/game";
     } else {
         alert(data.message);
@@ -36,17 +34,21 @@ async function login(name, password) {
 window.logout = async function(token) {
 response = await fetch("http://192.168.1.30:9090/api/session", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: token}) });
 const data = await response.json();
-console.log(data);
+//console.log(data);
 }
 async function register(name, password) {
 response = await fetch("http://192.168.1.30:9090/api/user", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: name, password: password}) });
 const data = await response.json();
-console.log(data);
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
+    alert(data.message)
 }
 window.deluser = async function(name, password, token) {
 response = await fetch("http://192.168.1.30:9090/api/user", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: name, password: password, token: token}) });
 const data = await response.json();
-console.log(data);
+//console.log(data);
 }
 
 

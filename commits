@@ -46,3 +46,12 @@ cooldowns:
 /api/user:6 messages per hour
 /api/session: is split to login (5 per minute) and logout (10 per minute)
 
+"name and password policy" added a class that checks if users have at least 8 chars long
+password and at least 3 characters long name with no @ in it (thats gonna help me implement
+mails)
+
+"testing" i had some issues resulting in me commiting nothing
+
+"policy fix" i NEED to do more tests before i push, i didnt negate the credsLegal
+resulting in the logic being negated obviously. really easy fix but im dissapointed in myself
+

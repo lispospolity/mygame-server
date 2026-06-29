@@ -18,7 +18,7 @@ public class UserLogin {
 
     public static ServerResponse mkUser(String name, String password) {
         if (db.getPassword(name) != null) return new ServerResponse(false, "User already exists.", 200);
-        if (CredentialsRules.credsLegal(name, password)) return new ServerResponse(false, "Name or password does not meet our policy.", 200);
+        if (!CredentialsRules.credsLegal(name, password)) return new ServerResponse(false, "Name or password does not meet our policy.", 200);
         String hash = BCrypt.hashpw(password, BCrypt.gensalt());
         db.addUser(name, hash);
         Debug.log("User "+name+" succesfully registered. (returned code 200)");
