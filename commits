@@ -5,7 +5,7 @@ Make a ping mechanism in which the entity stays alive for 30 sec (15 sec for fir
 then delete the closed conn's (took me way too long to understand I can delete everything that conn.isClosed() )
 in the last^ commit I forgot to write, that I have added a pinging websocket as a fix.
 
-"DB SAFETY" I was publically announcing my databases root password, so I changed the password and improved my method
+"DB SAFETY" I was publicly announcing my databases root password, so I changed the password and improved my method
 
 "server logs and naming" i just take out debuglog out of auth, because it'll be awful later on and:
 changed world.txt to game.world
@@ -30,7 +30,7 @@ fully done by claude sadly, i gave up after so many failed attempts with this sc
 i feel like this name is self-explanatory but i can say that it blocks give account
 5 mins after 5 wrong attempts
 
-"API changes" added some quality changes in the REST API for me, moved alot of the work
+"API changes" added some quality changes in the REST API for me, moved a lot of the work
 to the Helper class
 
 "API rate limiting":
@@ -53,5 +53,8 @@ mails)
 "testing" i had some issues resulting in me commiting nothing
 
 "policy fix" i NEED to do more tests before i push, i didnt negate the credsLegal
-resulting in the logic being negated obviously. really easy fix but im dissapointed in myself
+resulting in the logic being negated obviously. really easy fix but im disapointed in myself
 
+"walking delay feature" added a delay between walking events so that the player cant just
+spam websockets to go faster, right now its limited to 5 tiles / second (200ms) but i could
+implement speed and make it different if player is faster which im gonna do later (added "to.do")

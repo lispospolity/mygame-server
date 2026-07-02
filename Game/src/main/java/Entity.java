@@ -32,8 +32,11 @@ public class Entity {
         instance.broadcastWS("201", message);
         //remove from here>
         entmap.remove(name);
+        //remove from walking delay hashmap
+        PlayerMovement.walkAvailableTime.remove(name);
     }
     public record state(int x, int y) {}
 }
+//TODO implement new state - speed and combine it with PlayerMovement
 //TODO add health to state and class health regen with a scheduler
 //TODO change name to Player and make an Enemy or Entity class (Entity better)
