@@ -58,3 +58,5 @@ resulting in the logic being negated obviously. really easy fix but im disapoint
 "walking delay feature" added a delay between walking events so that the player cant just
 spam websockets to go faster, right now its limited to 5 tiles / second (200ms) but i could
 implement speed and make it different if player is faster which im gonna do later (added "to.do")
+
+"speed state" added a speed state as i wanted in my tasks
