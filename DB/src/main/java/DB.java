@@ -58,7 +58,7 @@ public class DB {
         }
     }
 
-    private Boolean isRegistered(String name) {
+    public Boolean isRegistered(String name) {
         try (PreparedStatement statement = conn.prepareStatement("""
             SELECT username
             FROM userspw

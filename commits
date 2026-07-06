@@ -60,3 +60,7 @@ spam websockets to go faster, right now its limited to 5 tiles / second (200ms) 
 implement speed and make it different if player is faster which im gonna do later (added "to.do")
 
 "speed state" added a speed state as i wanted in my tasks
+
+"policy user return" i made it so that the user actually gets a message what didnt fit with
+the policy. + some little changes like handling sql errors and sending a 500 internal server error
+when it does fail.

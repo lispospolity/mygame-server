@@ -25,7 +25,11 @@ public class Helper {
         return gson.fromJson(message, Map.class);
     }
 
-    public static void respond(HttpExchange exchange, String toClient) {
+    public static void respond(HttpExchange exchange, String toClient, Integer code) {
+        if (code == 500) {
+            error(exchange, code, toClient);
+            return;
+        }
         try {
             //System.out.println("responding with: "+toClient);
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
@@ -40,11 +44,11 @@ public class Helper {
     }
     public static void respond(HttpExchange ex, UserLogin.ServerResponse serverResponse) {
         String toClient = gson.toJson(serverResponse);
-        respond(ex, toClient);
+        respond(ex, toClient, serverResponse.code());
     }
     public static void respond(HttpExchange ex, UserLogin.LoginResponse loginResponse) {
         String toClient = gson.toJson(loginResponse);
-        respond(ex, toClient);
+        respond(ex, toClient, loginResponse.code());
     }
 
     public static void error(HttpExchange exchange, Integer code, String message, Exception e) {
