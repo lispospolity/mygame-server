@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 
 public class RateLimiting {
+    static HashMap<InetSocketAddress, Long> blockEverything = new HashMap<InetSocketAddress, Long>();
     static HashMap<InetSocketAddress, Long> blockLogIn = new HashMap<InetSocketAddress, Long>();
     static HashMap<InetSocketAddress, Long> blockLogOut = new HashMap<InetSocketAddress, Long>();
     static HashMap<InetSocketAddress, Long> blockUsers = new HashMap<InetSocketAddress, Long>();
@@ -74,4 +75,26 @@ public class RateLimiting {
             Integer requestCount,
             Long oldest
     ) {}
+    public static Boolean antiSQLI(HttpExchange exchange, String prompt1, String prompt2) {
+        InetSocketAddress ip = exchange.getRemoteAddress();
+        if (blockEverything.containsKey(ip) && blockEverything.get(ip)>System.currentTimeMillis()) return true;
+        if (prompt1.contains("OR 1=1") || prompt1.contains(";--")) {
+            blockEverything.put(ip, System.currentTimeMillis()+120000);
+            return true;
+        }
+        if (prompt2.contains("OR 1=1") || prompt2.contains(";--")) {
+            blockEverything.put(ip, System.currentTimeMillis()+120000);
+            return true;
+        }
+        return false;
+    }
+    public static Boolean antiSQLI(HttpExchange exchange, String prompt1) {
+        InetSocketAddress ip = exchange.getRemoteAddress();
+        if (blockEverything.containsKey(ip) && blockEverything.get(ip)>System.currentTimeMillis()) return true;
+        if (prompt1.contains("OR 1=1") || prompt1.contains(";--")) {
+            blockEverything.put(ip, System.currentTimeMillis()+120000);
+            return true;
+        }
+        return false;
+    }
 }

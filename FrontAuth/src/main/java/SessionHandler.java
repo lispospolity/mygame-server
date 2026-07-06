@@ -20,8 +20,8 @@ public class SessionHandler implements HttpHandler {
             Map msg = Helper.extractMessage(exchange);
             String name = (String) msg.get("username");
             String password = (String) msg.get("password");
-            if (name == null||password == null) {
-                Helper.error(exchange, 400, "Bad Request");
+            if (RateLimiting.antiSQLI(exchange, name, password)) {
+                Helper.error(exchange, 403, "DON'T INJECT SQL (you are blocked for 2 minutes)");
                 return;
             }
             Helper.respond(exchange, UserLogin.logIn(name, password));
@@ -40,8 +40,8 @@ public class SessionHandler implements HttpHandler {
         try {
             Map msg = Helper.extractMessage(exchange);
             String token = (String) msg.get("token");
-            if (token == null) {
-                Helper.error(exchange, 400, "Bad Request");
+            if (RateLimiting.antiSQLI(exchange, token)) {
+                Helper.error(exchange, 403, "DON'T INJECT SQL (you are blocked for 2 minutes)");
                 return;
             }
             Helper.respond(exchange, UserLogin.logOut(token));

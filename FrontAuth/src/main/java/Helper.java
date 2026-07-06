@@ -73,7 +73,7 @@ public class Helper {
         Map<String, String> error = new HashMap<>();
         error.put("error", message);
         String response = gson.toJson(error);
-
+        Debug.log("Responded to "+exchange.getRemoteAddress()+" with "+code+": "+message);
         byte[] byting = response.getBytes();
         try {
             exchange.sendResponseHeaders(code, byting.length);

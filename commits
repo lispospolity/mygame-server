@@ -64,3 +64,9 @@ implement speed and make it different if player is faster which im gonna do late
 "policy user return" i made it so that the user actually gets a message what didnt fit with
 the policy. + some little changes like handling sql errors and sending a 500 internal server error
 when it does fail.
+
+"antisqli" added a way for the system to detect basic sqli injection attempts and
+1. block the users ip for 2 minutes and send a 403 back
+2. log given user ip and sqli attempt
+
+3. also fixed the Helper.error method so it can log errors in server.log
