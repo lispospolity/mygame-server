@@ -68,5 +68,8 @@ when it does fail.
 "antisqli" added a way for the system to detect basic sqli injection attempts and
 1. block the users ip for 2 minutes and send a 403 back
 2. log given user ip and sqli attempt
-
 3. also fixed the Helper.error method so it can log errors in server.log
+
+"cookies and other" started storing the user token in cookies and added . to forbidden
+characters in register (might one day do a real forbidden list and just do if message
+contains forbidden in a loop probably)

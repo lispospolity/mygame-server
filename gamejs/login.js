@@ -25,7 +25,7 @@ async function login(name, password) {
         return;
     }
     if (data.success == true) {
-        localStorage.setItem("token", data.token)
+        document.cookie = "token="+data.token+"; path=/";
 	    window.location.href = "/game";
     } else {
         alert(data.message);

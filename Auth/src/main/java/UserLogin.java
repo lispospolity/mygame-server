@@ -45,7 +45,7 @@ public class UserLogin {
     }
     public static LoginResponse logIn(String name, String password) {
         LoginResponse lockResponse = LockOutAcc.handle(name);
-        if (lockResponse != null) return lockResponse; //anti brute force()
+        if (lockResponse != null) return lockResponse; //anti brute force() account blocking
 
         try {
             String dbHash = db.getPassword(name);

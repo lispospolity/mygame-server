@@ -10,7 +10,7 @@ init();
 async function init() {
 	await loadworld();
 	ws = new WebSocket("ws://192.168.1.30:9080");
-	ws.onopen = () => ws.send(JSON.stringify({ a: localStorage.getItem("token"), t:"0" }));
+	ws.onopen = () => ws.send(JSON.stringify({ a: getCookie("token"), t:"0" }));
 	//ws catchers beg
 	ws.onmessage = (e) => {
 		const data = JSON.parse(e.data);
@@ -86,6 +86,18 @@ function isPlayerAt(x, y) {
 		if (players[name].x == x && players[name].y == y) return true;
 	}
 	return false;
+}
+
+function getCookie(name) {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+        const [key, value] = cookie.split("=");
+
+        if (key === name) {
+            return decodeURIComponent(value);
+        }
+    }
+    return null;
 }
 document.addEventListener("keydown", (e) => {
 	//console.log(e);
