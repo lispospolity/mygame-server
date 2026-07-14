@@ -1,12 +1,11 @@
 import java.sql.*;
 public class PlayerStates {
     Connection conn;
-    Env.LoginCredentials login = Env.envRead(1);
     public PlayerStates() throws SQLException {
         conn = DriverManager.getConnection(
-                login.url(),
-                login.user(),
-                login.password()
+                Env.read("DB_PlayerStates_URL"),
+                Env.read("DB_User"),
+                Env.read("DB_Password")
         );
     }
 

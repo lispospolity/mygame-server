@@ -2,8 +2,8 @@
 server.log
 !.mvn/wrapper/maven-wrapper.jar
 .kotlin
-### MariaDB ###
-/DB/src/main/java/.env
+### environment variables ###
+.env
 
 ### IntelliJ IDEA ###
 .idea/

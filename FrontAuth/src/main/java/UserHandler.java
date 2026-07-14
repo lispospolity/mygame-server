@@ -20,11 +20,16 @@ public class UserHandler implements HttpHandler {
             Map msg = Helper.extractMessage(exchange);
             String name = (String) msg.get("username");
             String password = (String) msg.get("password");
+            String email = (String) msg.get("email");
+            if (name == null||password == null||email == null) {
+                Helper.error(exchange, 403, "Missing one of the required prompts");
+                return;
+            }
             if (RateLimiting.antiSQLI(exchange, name, password)) {
                 Helper.error(exchange, 403, "DON'T INJECT SQL (you are blocked for 2 minutes)");
                 return;
             }
-            Helper.respond(exchange, UserLogin.mkUser(name, password));
+            Helper.respond(exchange, UserLogin.registerStep1(email, name, password));
         } catch (IOException e) {
             Debug.log(e.toString());
             Helper.error(exchange, 500, "Internal Server Error", e);

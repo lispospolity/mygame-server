@@ -1,11 +1,13 @@
 //hashing
 import org.mindrot.jbcrypt.BCrypt;
 //uuid
+import java.util.HashMap;
 import java.util.UUID;
 import java.sql.SQLException;
 
 public class UserLogin {
     static final DB db;
+    public static HashMap<String, UserCreds> awaitingAuthentication = new HashMap<String, UserCreds>();
     static {
         try {
             db = new DB();
@@ -16,14 +18,34 @@ public class UserLogin {
         }
     }
 
-    public static ServerResponse mkUser(String name, String password) {
+    public static ServerResponse registerStep1(String email, String name, String password) {
         try {
             if (db.isRegistered(name)) return new ServerResponse(false, "User already exists.", 200);
             ServerResponse credsLegal = CredentialsRules.credsLegal(name, password);
             if (!credsLegal.success()) return credsLegal;
-            String hash = BCrypt.hashpw(password, BCrypt.gensalt());
-            db.addUser(name, hash);
-            Debug.log("User " + name + " succesfully registered. (returned code 200)");
+            MailResponse mailResponse = MailService.handleRegister(email);
+            ServerResponse parsedMailRsp = new ServerResponse(mailResponse.success(), mailResponse.message(), mailResponse.code());
+            if (!mailResponse.success()) return parsedMailRsp;
+            awaitingAuthentication.put(email, new UserCreds("REG", name, BCrypt.hashpw(password, BCrypt.gensalt()), mailResponse.authCode(), System.currentTimeMillis()+300000));
+            return parsedMailRsp;
+        } catch (RuntimeException e) {
+            Debug.log(e+"");
+            return new ServerResponse(false, "Internal Server Error.", 500);
+        }
+    }
+    public static ServerResponse registerStep2(String email, Integer code) {
+        try {
+            if (!awaitingAuthentication.containsKey(email)) return new ServerResponse(false, "Wrong code", 200);
+            if (code!=awaitingAuthentication.get(email).code()) return new ServerResponse(false, "Wrong code", 200);
+            if (awaitingAuthentication.get(email).expiresAt()<System.currentTimeMillis()) {
+                awaitingAuthentication.remove(email);
+                return new ServerResponse(false, "Wrong code", 200);
+            }
+            String name = awaitingAuthentication.get(email).name();
+            String hash = awaitingAuthentication.get(email).hash();
+            awaitingAuthentication.remove(email);
+            db.addUser(name, hash, email);
+            Debug.log("User " + name + " succesfully registered.");
             return new ServerResponse(true, "User succesfully made.", 200);
         } catch (RuntimeException e) {
             Debug.log(e+"");
@@ -77,6 +99,7 @@ public class UserLogin {
         }
     }
 
+
     public record ServerResponse(
         Boolean success,
         String message,
@@ -88,6 +111,21 @@ public class UserLogin {
             String token,
             String message,
             int code
+    ) {}
+
+    public record MailResponse(
+            Boolean success,
+            String message,
+            int authCode,
+            int code
+    ) {}
+
+    public record UserCreds(
+            String type,
+            String name,
+            String hash,
+            int code,
+            Long expiresAt
     ) {}
 }
 //TODO add email register and email log in compability

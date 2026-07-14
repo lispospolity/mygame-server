@@ -9,6 +9,7 @@ public class Http {
         HttpServer server = HttpServer.create(new InetSocketAddress(9090), 0);
         server.createContext("/api/session", new SessionHandler());
         server.createContext("/api/user", new UserHandler());
+        server.createContext("/api/auth/user", new AuthUserHandler());
         server.setExecutor(null); // uses default
         try {
             server.start();
@@ -17,6 +18,8 @@ public class Http {
             Debug.log(e.toString());
         }
         Debug.log("INIT: API started.");
+        MailService smtp = new MailService();
+        Debug.log("INIT: SMTP started.");
         World.LoadWorld();
         try {
             new Thread(() -> start.startWS()).start();

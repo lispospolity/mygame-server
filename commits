@@ -73,3 +73,9 @@ when it does fail.
 "cookies and other" started storing the user token in cookies and added . to forbidden
 characters in register (might one day do a real forbidden list and just do if message
 contains forbidden in a loop probably)
+
+"email register" - huge update so buckle your fuckles:
+1. changed the .env style to match the conventional approaches
+2. added a rest api thingy /api/auth/user
+3. added smtp sending and using code to authorize the mail
+4. slightly changed frontend to match the design

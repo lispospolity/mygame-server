@@ -2,25 +2,25 @@ import java.sql.*;
 public class DB {
     Connection conn;
     PlayerStates playerStates;
-    Env.LoginCredentials login = Env.envRead(0);
     public DB() throws SQLException {
         conn = DriverManager.getConnection(
-                login.url(),
-                login.user(),
-                login.password()
+                Env.read("DB_Users_URL"),
+                Env.read("DB_User"),
+                Env.read("DB_Password")
         );
         playerStates = new PlayerStates();
     }
 
-    public void addUser(String name, String hash) {
+    public void addUser(String name, String hash, String email) {
         if (isRegistered(name)) return;
         try (PreparedStatement statement = conn.prepareStatement("""
-        INSERT INTO userspw(username, pwd_hash)
-        VALUES (?, ?)
+        INSERT INTO userspw(username, pwd_hash, email)
+        VALUES (?, ?, ?)
       """)) {
             playerStates.saveLoc(name, "1", "1");
             statement.setString(1, name);
             statement.setString(2, hash);
+            statement.setString(3, email);
             int rowsInserted = statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
