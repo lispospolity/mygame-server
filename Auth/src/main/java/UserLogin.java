@@ -35,11 +35,11 @@ public class UserLogin {
     }
     public static ServerResponse registerStep2(String email, Integer code) {
         try {
-            if (!awaitingAuthentication.containsKey(email)) return new ServerResponse(false, "Wrong code", 200);
-            if (code!=awaitingAuthentication.get(email).code()) return new ServerResponse(false, "Wrong code", 200);
+            if (!awaitingAuthentication.containsKey(email)) return new ServerResponse(false, "Couldn't find given email in pending requests, please try again", 200);
+            if (code!=awaitingAuthentication.get(email).code()) return new ServerResponse(false, "Wrong code, please try again.", 200);
             if (awaitingAuthentication.get(email).expiresAt()<System.currentTimeMillis()) {
                 awaitingAuthentication.remove(email);
-                return new ServerResponse(false, "Wrong code", 200);
+                return new ServerResponse(false, "Code has expired.", 200);
             }
             String name = awaitingAuthentication.get(email).name();
             String hash = awaitingAuthentication.get(email).hash();
@@ -72,16 +72,16 @@ public class UserLogin {
         try {
             String dbHash = db.getPassword(name);
             if (dbHash == null) return new LoginResponse(false, null, "Account does not exist.", 200);
-            if (db.loggedIn(name)) return new LoginResponse(false, null, "User already logged in.", 200);
-            if (BCrypt.checkpw(password, dbHash)) {
-                String token = UUID.randomUUID().toString();
-                long time = System.currentTimeMillis();
-                db.logIn(name, token, time);
-                Debug.log("User " + name + " logged in. (returned code 200)");
-                return new LoginResponse(true, token, "Account succesfully logged in.", 200);
+            if (!BCrypt.checkpw(password, dbHash)) {
+                LockOutAcc.nextWrong(name); //anti-brute force attempt counter
+                return new LoginResponse(false, null, "Wrong password.", 200);
             }
-            LockOutAcc.nextWrong(name); //anti-brute force attempt counter
-            return new LoginResponse(false, null, "Wrong password.", 200);
+            if (db.loggedIn(name)) return new LoginResponse(false, null, "User already logged in.", 200);
+            String token = UUID.randomUUID().toString();
+            long time = System.currentTimeMillis();
+            db.logIn(name, token, time);
+            Debug.log("User " + name + " logged in. (returned code 200)");
+            return new LoginResponse(true, token, "Account succesfully logged in.", 200);
         } catch (RuntimeException e) {
             Debug.log(e + "");
             return new LoginResponse(false, null, "Internal Server Error.", 500);

@@ -12,6 +12,7 @@ registerbtn.addEventListener('click', (e) => {
     register(username, passwd, email);
 });
 
+
 async function register(name, password, email) {
     const loading = document.getElementById("loading");
     loading.textContent = "Waiting for server...";
@@ -30,25 +31,7 @@ async function register(name, password, email) {
         alert(data.error);
         return;
     }
-    alert(data.message)
-    const code = prompt("Check your mailbox for new messages and insert the code here:");
-    await authorize(code, email);
+    document.cookie = "email="+email+"; path=/"
+    window.location.href = "/auth";
 }
 
-async function authorize(code, email) {
-    const response = await fetch("http://192.168.1.30:9090/api/auth/user", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            email: email,
-            code: code
-            })
-    });
-    const data = await response.json();
-    if (data.error) {
-        alert(data.error);
-        return;
-    }
-    alert(data.message);
-    window.location.href = "/login";
-}

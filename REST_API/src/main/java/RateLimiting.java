@@ -34,7 +34,7 @@ public class RateLimiting {
         if (loginrequests.get(ip).oldest() <= System.currentTimeMillis()-60000) {
             loginrequests.put(ip, new requestCountAndOldest(1, System.currentTimeMillis()));
         }
-        if (loginrequests.get(ip).requestCount>=5) blockLogIn.put(ip, System.currentTimeMillis()+60000);
+        if (loginrequests.get(ip).requestCount>=20) blockLogIn.put(ip, System.currentTimeMillis()+60000);
         return false;
     }
     private static Boolean throttleLogout(InetSocketAddress ip) {
@@ -51,7 +51,7 @@ public class RateLimiting {
         if (logoutrequests.get(ip).oldest() <= System.currentTimeMillis()-60000) {
             logoutrequests.put(ip, new requestCountAndOldest(1, System.currentTimeMillis()));
         }
-        if (logoutrequests.get(ip).requestCount>=10) blockLogOut.put(ip, System.currentTimeMillis()+3600000);
+        if (logoutrequests.get(ip).requestCount>=50) blockLogOut.put(ip, System.currentTimeMillis()+3600000);
         return false;
     }
     private static Boolean throttleUsers(InetSocketAddress ip) {
@@ -68,7 +68,7 @@ public class RateLimiting {
         if (usersrequests.get(ip).oldest() <= System.currentTimeMillis()-3600000) {
             usersrequests.put(ip, new requestCountAndOldest(1, System.currentTimeMillis()));
         }
-        if (usersrequests.get(ip).requestCount>=6) blockUsers.put(ip, System.currentTimeMillis()+60000);
+        if (usersrequests.get(ip).requestCount>=20) blockUsers.put(ip, System.currentTimeMillis()+60000);
         return false;
     }
     private record requestCountAndOldest(

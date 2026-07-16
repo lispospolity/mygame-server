@@ -11,10 +11,10 @@
 
     <modules>
         <module>Auth</module>
-        <module>FrontAuth</module>
+        <module>REST_API</module>
         <module>DB</module>
         <module>Game</module>
-        <module>debuglog</module>
+        <module>SystemUtils</module>
     </modules>
 
 </project>

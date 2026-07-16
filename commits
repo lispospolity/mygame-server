@@ -79,3 +79,9 @@ contains forbidden in a loop probably)
 2. added a rest api thingy /api/auth/user
 3. added smtp sending and using code to authorize the mail
 4. slightly changed frontend to match the design
+
+"small improvements" - some small changes before i hop back to making mail login
+1. UserLogin.LogIn swapped places "user logged in already" with "password incorrect"
+2. RateLimiting, made rate limiting slightly more lenient (my brothers idea)
+3. fixed my module naming and renamed gamejs folder to "web" so its easier to navigate around intellij
+4. some small bug fixes i didnt catch on the *gasp* frontend
