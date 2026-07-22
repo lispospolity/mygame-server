@@ -12,7 +12,7 @@ public class DB {
     }
 
     public void addUser(String name, String hash, String email) {
-        if (isRegistered(name)) return;
+        //if (isRegistered(name, email)) return;
         try (PreparedStatement statement = conn.prepareStatement("""
         INSERT INTO userspw(username, pwd_hash, email)
         VALUES (?, ?, ?)
@@ -58,13 +58,14 @@ public class DB {
         }
     }
 
-    public Boolean isRegistered(String name) {
+    public Boolean isRegistered(String name, String email) {
         try (PreparedStatement statement = conn.prepareStatement("""
             SELECT username
             FROM userspw
-            WHERE username = ?
+            WHERE username = ? OR email = ?
         """)) {
             statement.setString(1, name);
+            statement.setString(2, email);
             ResultSet resultSet = statement.executeQuery();
             return resultSet.next();
         } catch (SQLException e) {
@@ -119,6 +120,22 @@ public class DB {
             WHERE token = ?
         """)) {
             statement.setString(1, token);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("username");
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public String getNameByMail(String email) {
+        try (PreparedStatement statement = conn.prepareStatement("""
+            SELECT username
+            FROM userspw
+            WHERE email = ?
+        """)) {
+            statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getString("username");

@@ -85,3 +85,9 @@ contains forbidden in a loop probably)
 2. RateLimiting, made rate limiting slightly more lenient (my brothers idea)
 3. fixed my module naming and renamed gamejs folder to "web" so its easier to navigate around intellij
 4. some small bug fixes i didnt catch on the *gasp* frontend
+
+"mail login asynchronous" - some more features and more tweaks
+1. made registering asynchronous
+2. added logging in with only an email
+3. tweaked some frontend shenanigans like no if (!data.success) return;
+4. tweaked some debug logs to more fit my style

@@ -31,7 +31,11 @@ async function register(name, password, email) {
         alert(data.error);
         return;
     }
-    document.cookie = "email="+email+"; path=/"
+    if (!data.success) {
+        alert(data.message);
+        return;
+    }
+    document.cookie = "email="+email+"; path=/auth"
     window.location.href = "/auth";
 }
 

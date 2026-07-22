@@ -146,7 +146,7 @@ public class Websocket extends WebSocketServer{
 
     @Override
     public void onStart() {
-        Debug.log("INIT: Server WS started.");
+        Debug.log("WS server ready");
     }
     public void sendWS(WebSocket conn, String type, Map<String, String> data) {
         //TODO server->client optimize with bytes arrays

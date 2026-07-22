@@ -34,23 +34,23 @@ async function authorize(code, email) {
         alert(data.error);
         return;
     }
-    if (data.token != null) {
-        document.cookie = "token="+data.token+"; path=/";
-        document.cookie = "email=; max-age=0; path=/";
-        window.location.href = "/game";
-    }
     if (!data.success) {
         alert(data.message);
         return;
     }
-    document.cookie = "email=; max-age=0; path=/";
+    if (data.token) {
+        document.cookie = "token="+data.token+"; path=/";
+        document.cookie = "email=; max-age=0; path=/auth";
+        window.location.href = "/game";
+        return;
+    }
+    document.cookie = "email=; max-age=0; path=/auth";
     window.location.href = "/login";
 }
 function getCookie(name) {
     const cookies = document.cookie.split("; ");
     for (const cookie of cookies) {
         const [key, value] = cookie.split("=");
-
         if (key === name) {
             return decodeURIComponent(value);
         }

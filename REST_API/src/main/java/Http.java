@@ -18,13 +18,18 @@ public class Http {
             Debug.log(e.toString());
         }
         Debug.log("INIT: API started.");
-        MailService smtp = new MailService();
-        Debug.log("INIT: SMTP started.");
+        try {
+            new Thread(() -> new MailService()).start();
+            Debug.log("INIT: SMTP started.");
+        } catch (Exception e) {
+            Debug.log("INIT: Mailservice found an issue during startup: "+e);
+        }
         World.LoadWorld();
         try {
             new Thread(() -> start.startWS()).start();
+            Debug.log("INIT: WebSocket server started.");
         } catch (Exception e) {
-            Debug.log("INIT: WS Server encountered an error during startup:");
+            Debug.log("INIT: WS Server encountered an error during startup: ");
             Debug.log(e.toString());
         }
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

@@ -24,6 +24,11 @@ public class AuthUserHandler implements HttpHandler {
                 Helper.error(exchange, 403, "DON'T INJECT SQL (you are blocked for 2 minutes)");
                 return;
             }
+            String authType = UserLogin.authenticatingType(email);
+            if ("LOG".equals(authType)) {
+                Helper.respond(exchange, UserLogin.emailLogInStep2(email, Integer.valueOf(code)));
+                return;
+            }
             Helper.respond(exchange, UserLogin.registerStep2(email, Integer.valueOf(code)));
         } catch (IOException e) {
             Debug.log(e.toString());

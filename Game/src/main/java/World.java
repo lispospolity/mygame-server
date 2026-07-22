@@ -7,7 +7,6 @@ import java.util.List;
 public class World {
     public static int[][] grid;
     private static int[][] readWorld() {
-        Debug.log("INIT: Reading game.world");
         int[][] grid = new int[10][10];
         Path filePath = Paths.get("game.world");
         try {
@@ -27,7 +26,7 @@ public class World {
     }
     public static void LoadWorld() {
         grid = readWorld();
-        Debug.log("INIT: World loaded succesfully.");
+        Debug.log("World ready.");
         //create entities (when I add NPCs)
     }
 }

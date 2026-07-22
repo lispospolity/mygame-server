@@ -9,6 +9,8 @@ loginbtn.addEventListener('click', (e) => {
 });
 
 async function login(name, password) {
+    localStorage.setItem("LOGINMETHOD", "name")
+    if (name.includes("@")) localStorage.setItem("LOGINMETHOD", "email");
     const loading = document.getElementById("loading");
     loading.textContent = "Waiting for server...";
     const response = await fetch("http://192.168.1.30:9090/api/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: name, password: password}) });
@@ -17,13 +19,22 @@ async function login(name, password) {
     loading.textContent = "";
     if (data.error) {
         alert(data.error);
+        localStorage.removeItem("LOGINMETHOD")
         return;
     }
     if (data.success == true) {
-        document.cookie = "token="+data.token+"; path=/";
-	    window.location.href = "/game";
+        if (localStorage.getItem("LOGINMETHOD") === "name") {
+            document.cookie = "token="+data.token+"; path=/";
+            localStorage.removeItem("LOGINMETHOD")
+            window.location.href = "/game";
+            return;
+        }
+        document.cookie = "email="+name+"; path=/auth"
+        localStorage.removeItem("LOGINMETHOD")
+        window.location.href = "/auth";
     } else {
         alert(data.message);
+        localStorage.removeItem("LOGINMETHOD")
     }
 }
 window.logout = async function(token) {
